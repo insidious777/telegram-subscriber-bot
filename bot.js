@@ -1,9 +1,12 @@
 const TelegramBot = require('node-telegram-bot-api');
 const request = require('request');
+const fs = require('fs');
 require('dotenv').config();
 const token = process.env.TELEGRAM_BOT_API_KEY;
 
 const bot = new TelegramBot(token, {polling: true});
+
+
 
 const target = {
     name: null,
@@ -12,6 +15,19 @@ const target = {
 }
 let subscribedUsers = []
 
+function setUsersToFile(users){
+    fs.writeFile('connected_users.txt',JSON.stringify(users),(err)=>{
+        console.log('success write file')
+    })
+}
+
+function getUsersFromFile() {
+    fs.readFile('connected_users.txt',(err, data)=>{
+        subscribedUsers = (JSON.parse(data.toString()));
+    })
+}
+
+getUsersFromFile();
 
 const sendMessageToAllUsers = (message) => {
     subscribedUsers.map((user)=>{
@@ -98,11 +114,13 @@ const setTarget = (name) => {
 
 const subscribeUser = (chatId) => {
     subscribedUsers.push(chatId)
+    setUsersToFile(subscribedUsers);
     console.log('users update:', subscribedUsers);
 }
 
 const unsubscribeUser = (chatId) => {
     subscribedUsers = subscribedUsers.filter((id)=>id!==+chatId)
+    setUsersToFile(subscribedUsers);
     console.log('users update:', subscribedUsers);
 }
 
