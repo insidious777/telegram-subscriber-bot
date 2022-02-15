@@ -6,18 +6,28 @@ const token = process.env.TELEGRAM_BOT_API_KEY;
 
 const bot = new TelegramBot(token, {polling: true});
 
-
-
-const target = {
+let target = {
     name: null,
     id: null,
     newest_post_id: null
 }
 let subscribedUsers = []
 
+function setTargetToFile(target){
+    fs.writeFile('target.txt',JSON.stringify(target),(err)=>{
+        console.log('success write target to file')
+    })
+}
+
+function getTargetFromFile() {
+    fs.readFile('target.txt',(err, data)=>{
+        target = (JSON.parse(data.toString()));
+    })
+}
+
 function setUsersToFile(users){
     fs.writeFile('connected_users.txt',JSON.stringify(users),(err)=>{
-        console.log('success write file')
+        console.log('success write users file')
     })
 }
 
@@ -28,6 +38,7 @@ function getUsersFromFile() {
 }
 
 getUsersFromFile();
+getTargetFromFile();
 
 const sendMessageToAllUsers = (message) => {
     subscribedUsers.map((user)=>{
@@ -69,6 +80,7 @@ const getTargetId = () => {
             if(parsedResponse.errors) console.log('error');
             else if(parsedResponse.data) {
                 target.id = parsedResponse.data[0].id;
+                setTargetToFile(target);
                 console.log(parsedResponse.data);
             }
         }
@@ -95,6 +107,7 @@ const checkNewPosts = () => {
                        getPostTextById(parsedResponse.meta.newest_id);
                     }
                     target.newest_post_id = parsedResponse.meta.newest_id;
+                    setTargetToFile(target);
                 }
             }
         });
@@ -110,10 +123,12 @@ const setTarget = (name) => {
     target.id = null;
     target.name = name;
     getTargetId();
+    setTargetToFile(target);
 }
 
 const subscribeUser = (chatId) => {
     subscribedUsers.push(chatId)
+    subscribedUsers = [...new Set(subscribedUsers)];
     setUsersToFile(subscribedUsers);
     console.log('users update:', subscribedUsers);
 }
