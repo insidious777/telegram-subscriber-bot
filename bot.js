@@ -148,39 +148,39 @@ bot.on('message', (msg) => {
     switch (commandParts[0]) {
         case '/start':
         case '/help':{
-            bot.sendMessage(chatId, `Використання бота:\n
-            /target - Обрати користувача для слідкування (наприклад /target poroshenko)\n
-            /enable - Увімкнути сповіщення про нові твіти (за замовчуванням вимкнено)\n
-            /disable - Вимкнути сповіщення про нові твіти\n
-            /info - Перегляд кількості користувачів які стежать (та додаткова інформація)
+            bot.sendMessage(chatId, `Bot usage:\n
+            /target - Select user to follow (e.g. /target elonmusk)\n
+            /enable - Enable new tweet notifications (disabled by default)\n
+            /disable - Disable notifications for new tweets\n
+            /info - View the number of followers (and more information)
             `)
             break;
         }
         case '/target':{
             setTarget(commandParts[1]);
-            sendMessageToAllUsers(`Слідкування за @${commandParts[1]} увімкненно`)
+            sendMessageToAllUsers(`Tracking of @${commandParts[1]} enabled`)
             break;
         }
         case '/enable':{
             subscribeUser(chatId);
-            bot.sendMessage(chatId, `Сповіщення про нові твіти увімкненно`);
+            bot.sendMessage(chatId, `New tweets notifications are on`);
             break;
         }
         case '/disable':{
             unsubscribeUser(chatId);
-            bot.sendMessage(chatId, `Сповіщення про нові твіти вимкнено`);
+            bot.sendMessage(chatId, `New tweets notifications are turned off`);
             break;
         }
         case '/info':{
-            if(target.name) bot.sendMessage(chatId, `Слідкування за @${target.name}`);
-            else bot.sendMessage(chatId, `Ціль слідкування не задана`);
+            if(target.name) bot.sendMessage(chatId, `Target: @${target.name}`);
+            else bot.sendMessage(chatId, `Target not set`);
             //bot.sendMessage(chatId, `Target id is ${target.id}`);
             //bot.sendMessage(chatId, `Target newest post id is ${target.newest_post_id}`);
-            bot.sendMessage(chatId, `Кількість користувачів які стежать: ${subscribedUsers.length}`);
+            bot.sendMessage(chatId, `Number of followers: ${subscribedUsers.length}`);
             break;
         }
         default: {
-            bot.sendMessage(chatId, `${msg.from.first_name}, такої команди не існує`);
+            bot.sendMessage(chatId, `${msg.from.first_name}, wrong command`);
             break;
         }
     }
